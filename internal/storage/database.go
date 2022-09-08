@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 	"database/sql"
-	"github.com/dayterr/go-diploma/cmd/gophermart/handlers"
 	"log"
 	"time"
 )
@@ -29,7 +28,7 @@ func NewUserDB(dsn string) (UserStorage, error) {
 	}, nil
 }
 
-func (us UserStorage) AddUser(user handlers.UserModel) (int64, error) {
+func (us UserStorage) AddUser(user UserModel) (int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

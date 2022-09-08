@@ -11,9 +11,3 @@ type Auth struct {
 	Key string
 	Storage storage.Storager
 }
-
-type UserModel struct {
-	ID int
-	Name string
-	Password string
-}

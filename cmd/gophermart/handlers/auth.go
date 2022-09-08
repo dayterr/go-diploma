@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"github.com/dayterr/go-diploma/internal/storage"
 	"github.com/dgrijalva/jwt-go/v4"
 	"log"
 	"time"
@@ -29,7 +30,7 @@ func createToken(id int64, key string) (string, error) {
 }
 
 func (a Auth) RegisterNewUser(user User, key string) (string, error) {
-	var modelUser UserModel
+	var modelUser storage.UserModel
 	modelUser.Name = user.Name
 	modelUser.Password = EncryptPassword(user.Password, key)
 
