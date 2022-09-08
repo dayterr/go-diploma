@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.0-20210816181553-5444fa50b93d // indirect
+	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1 // indirect
 	github.com/go-chi/chi/v5 v5.0.7 // indirect
 	github.com/go-chi/jwtauth/v5 v5.0.2 // indirect
 	github.com/goccy/go-json v0.7.6 // indirect
