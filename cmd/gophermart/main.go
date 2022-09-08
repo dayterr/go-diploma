@@ -9,7 +9,7 @@ import (
 func main() {
 	ah := handlers.NewAsyncHandler("")
 	r := handlers.CreateRouterWithAsyncHandler(ah)
-	err := http.ListenAndServe("http://localhost:8080", r)
+	err := http.ListenAndServe("localhost:8080", r)
 	if err != nil {
 		log.Fatal("starting server error", err)
 	}
