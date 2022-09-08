@@ -30,6 +30,5 @@ func GetConfig() (Config, error) {
 	if cfg.DatabaseURI == "" && fs.DatabaseURI != "" {
 		cfg.DatabaseURI = fs.DatabaseURI
 	}
-	log.Println("config", cfg)
 	return cfg, nil
 }

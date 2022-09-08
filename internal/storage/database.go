@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"database/sql"
+	_ "github.com/lib/pq"
 	"log"
 	"time"
 )
@@ -21,7 +22,7 @@ func NewUserDB(dsn string) (UserStorage, error) {
 	if err != nil {
 		return UserStorage{}, err
 	}
-
+	log.Println("table users created")
 	return UserStorage{
 		DB:           db,
 		DSN:          dsn,
@@ -32,8 +33,9 @@ func (us UserStorage) AddUser(user UserModel) (int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	log.Println("writing user to database")
 	res, err := us.DB.ExecContext(ctx,
-		`INSERT INTO users (login, password) VALUES ($1, $2) RETUNRNING id`,
+		`INSERT INTO users (login, password) VALUES ($1, $2) RETURNING id`,
 		user.Name, user.Password)
 	if err != nil {
 		log.Println("user creation error:", err)

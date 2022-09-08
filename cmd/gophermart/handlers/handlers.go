@@ -17,7 +17,7 @@ func NewAsyncHandler(dsn string) AsyncHandler {
 	var s storage.Storager
 	s, err := storage.NewUserDB(dsn)
 	if err != nil {
-		log.Println(err)
+		log.Println("setting database error", err)
 	}
 	auth.Storage = s
 	auth.Key = ""
