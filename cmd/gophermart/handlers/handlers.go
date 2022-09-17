@@ -94,10 +94,10 @@ func (ah *AsyncHandler) LoadOrderNumber(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if !CheckLuhn(orderNumber) {
+	/*if !CheckLuhn(orderNumber) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
-	}
+	}*/
 
 	order, err := ah.Auth.Storage.GetOrder(orderNumber)
 
