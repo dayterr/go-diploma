@@ -1,6 +1,9 @@
 package handlers
 
-import "github.com/dayterr/go-diploma/internal/storage"
+import (
+	"github.com/dayterr/go-diploma/internal/storage"
+	"github.com/dgrijalva/jwt-go/v4"
+)
 
 type User struct {
 	Name string `json:"login"`
@@ -10,4 +13,9 @@ type User struct {
 type Auth struct {
 	Key string
 	Storage storage.Storager
+}
+
+type CustomClaims struct {
+	UserID int64
+	jwt.StandardClaims
 }

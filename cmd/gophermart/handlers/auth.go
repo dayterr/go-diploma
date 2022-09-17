@@ -19,9 +19,12 @@ func EncryptPassword(password string, key string) string {
 }
 
 func createToken(id int64, key string) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
-		ExpiresAt: jwt.At(time.Now().Add(1440 * time.Minute)),
-		IssuedAt:  jwt.At(time.Now()),
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &CustomClaims{
+		UserID: id,
+		StandardClaims: jwt.StandardClaims {
+			ExpiresAt: jwt.At(time.Now().Add(1440 * time.Minute)),
+			IssuedAt:  jwt.At(time.Now()),
+		},
 	})
 	signedToken, err := token.SignedString([]byte(key))
 	if err != nil {
@@ -71,7 +74,7 @@ func (a Auth) AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 		log.Print("userID middle")
-		log.Print(claims.ID)
+		log.Print(claims.Subject)
 		ctx := context.WithValue(r.Context(), "username", claims.ID)
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
