@@ -93,8 +93,13 @@ func (ah *AsyncHandler) LoadOrderNumber(w http.ResponseWriter, r *http.Request) 
 
 	order, err := ah.Auth.Storage.GetOrder(orderNumber)
 
-	userID := r.Context().Value("username").(int)
-	if userID == order.UserID {
+	username := r.Context().Value(string("username"))
+	userID, err := ah.Auth.Storage.GetUser(username)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	if int(userID) == order.UserID {
 		w.WriteHeader(http.StatusOK)
 	} else if order.UserID != 0 {
 		w.WriteHeader(http.StatusConflict)
