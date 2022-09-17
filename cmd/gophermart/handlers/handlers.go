@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"encoding/json"
+	"strconv"
 )
 
 type AsyncHandler struct{
@@ -76,6 +77,36 @@ func (ah *AsyncHandler) LogUser(w http.ResponseWriter, r *http.Request) {
 		Value: token,
 	})
 	w.WriteHeader(http.StatusOK)
+}
+
+func (ah *AsyncHandler) LoadOrderNumber(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	orderNumber, err := strconv.Atoi(string(body))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	order, err := ah.Auth.Storage.GetOrder(orderNumber)
+
+	userID := r.Context().Value("username").(int)
+	if userID == order.UserID {
+		w.WriteHeader(http.StatusOK)
+	} else if order.UserID != 0 {
+		w.WriteHeader(http.StatusConflict)
+	}
+
+	_, err = ah.Auth.Storage.AddOrder(orderNumber, userID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusAccepted)
+
 }
 
 

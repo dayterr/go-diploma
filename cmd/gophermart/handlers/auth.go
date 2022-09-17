@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
 	"github.com/dayterr/go-diploma/internal/storage"
 	"github.com/dgrijalva/jwt-go/v4"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -39,12 +41,50 @@ func (a Auth) RegisterNewUser(user User, key string) (string, error) {
 	return token, err
 }
 
+func (a Auth) AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		urls := []string{"/api/user/register", "/api/user/login"}
+		path := r.URL.Path
+		for _, v := range urls {
+			if v == path {
+				next.ServeHTTP(w, r)
+				return
+			}
+		}
+
+		cookieToken, err := r.Cookie("Bearer")
+		if err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		claims := &jwt.StandardClaims{}
+		token, err := jwt.ParseWithClaims(cookieToken.Value, claims, func(token *jwt.Token) (interface{}, error) {
+			return []byte(a.Key), nil
+		})
+		if err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		if !token.Valid {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		log.Print("userID middle")
+		log.Print(claims.ID)
+		ctx := context.WithValue(r.Context(), "username", claims.ID)
+		r = r.WithContext(ctx)
+		next.ServeHTTP(w, r)
+
+	})
+}
+
 func (a Auth) LogUser(user User, key string) (string, error) {
 	var modelUser storage.UserModel
 	modelUser.Name = user.Name
 	modelUser.Password = EncryptPassword(user.Password, key)
 
-	id, err := a.Storage.GetUser(modelUser)
+	id, err := a.Storage.GetUser(modelUser.Name)
 	token, err := createToken(id, key)
 	return token, err
 }
