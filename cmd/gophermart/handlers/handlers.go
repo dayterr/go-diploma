@@ -13,6 +13,8 @@ type AsyncHandler struct{
 	Auth Auth
 }
 
+type UserID string
+
 func NewAsyncHandler(dsn string) AsyncHandler {
 	var auth Auth
 	var s storage.Storager
@@ -89,29 +91,31 @@ func (ah *AsyncHandler) LoadOrderNumber(w http.ResponseWriter, r *http.Request) 
 	orderNumber, err := strconv.Atoi(string(body))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	order, err := ah.Auth.Storage.GetOrder(orderNumber)
 
-	username := r.Context().Value("username").(string)
-	userID, err := ah.Auth.Storage.GetUser(username)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-	}
+	log.Println(order)
+
+	userID := r.Context().Value("username").(int64)
+
 
 	if int(userID) == order.UserID {
 		w.WriteHeader(http.StatusOK)
+		return
 	} else if order.UserID != 0 {
 		w.WriteHeader(http.StatusConflict)
+		return
 	}
 
 	_, err = ah.Auth.Storage.AddOrder(orderNumber, int(userID))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	w.WriteHeader(http.StatusAccepted)
-
 }
 
 

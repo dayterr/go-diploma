@@ -114,10 +114,13 @@ FROM orders WHERE number = $1`, orderNumber)
 		return OrderModel{}, nil
 	}
 
-	err = res.Scan(&order)
-	if err != nil {
-		log.Println("scanning OrderModel error", err)
-		return OrderModel{}, err
+	for res.Next() {
+		err = res.Scan(&order.ID, &order.Number, &order.Status, &order.Accrual,
+			&order.UploadedAt, &order.UserID)
+		if err != nil {
+			log.Println("scanning OrderModel error", err)
+			return OrderModel{}, err
+		}
 	}
 	return order, nil
 }
@@ -132,7 +135,7 @@ func (us UserStorage) AddOrder(orderNumber, userID int) (int64, error) {
                     VALUES ($1, $2, $3, $4, $5) RETURNING id`,
                     orderNumber, "NEW", 0.0, time.Now().Format(time.RFC3339), userID)
 	if err != nil {
-		log.Println("user creation error:", err)
+		log.Println("order creation error:", err)
 		return 0, err
 	}
 	id, _ := res.LastInsertId()

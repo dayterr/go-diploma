@@ -61,7 +61,7 @@ func (a Auth) AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		claims := &jwt.StandardClaims{}
+		claims := &CustomClaims{}
 		token, err := jwt.ParseWithClaims(cookieToken.Value, claims, func(token *jwt.Token) (interface{}, error) {
 			return []byte(a.Key), nil
 		})
@@ -73,9 +73,8 @@ func (a Auth) AuthMiddleware(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		log.Print("userID middle")
-		log.Print(claims.Subject)
-		ctx := context.WithValue(r.Context(), "username", claims.ID)
+
+		ctx := context.WithValue(r.Context(), "username", claims.UserID)
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 
