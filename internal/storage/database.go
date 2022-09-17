@@ -44,3 +44,16 @@ func (us UserStorage) AddUser(user UserModel) (int64, error) {
 	id, _ := res.LastInsertId()
 	return id, err
 }
+
+func (us UserStorage) GetUser(user UserModel) (int64, error) {
+	var userID int64
+
+	log.Println("getting user from database")
+	res := us.DB.QueryRow(`SELECT id FROM users WHERE login = $1`, user.Name)
+	err := res.Scan(&userID)
+	if err != nil {
+		log.Println("getting id error", err)
+		return 0, err
+	}
+	return userID, err
+}

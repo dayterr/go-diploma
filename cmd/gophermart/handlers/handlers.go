@@ -50,7 +50,32 @@ func (ah *AsyncHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		Value: token,
 	})
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("JWT " + token))
+}
+
+func (ah *AsyncHandler) LogUser(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	var u User
+	err = json.Unmarshal(body, &u)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	token, err := ah.Auth.LogUser(u, "")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	http.SetCookie(w, &http.Cookie{
+		Name:  "Bearer",
+		Value: token,
+	})
+	w.WriteHeader(http.StatusOK)
 }
 
 

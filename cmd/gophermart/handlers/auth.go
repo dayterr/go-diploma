@@ -38,3 +38,13 @@ func (a Auth) RegisterNewUser(user User, key string) (string, error) {
 	token, err := createToken(id, key)
 	return token, err
 }
+
+func (a Auth) LogUser(user User, key string) (string, error) {
+	var modelUser storage.UserModel
+	modelUser.Name = user.Name
+	modelUser.Password = EncryptPassword(user.Password, key)
+
+	id, err := a.Storage.GetUser(modelUser)
+	token, err := createToken(id, key)
+	return token, err
+}
