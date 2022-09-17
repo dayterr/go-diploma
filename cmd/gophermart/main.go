@@ -13,9 +13,8 @@ func main() {
 		log.Fatal("no config, can't start the program")
 	}
 	ah := handlers.NewAsyncHandler(config.DatabaseURI)
-	log.Println("hehe", config.DatabaseURI)
 	r := handlers.CreateRouterWithAsyncHandler(ah)
-	err = http.ListenAndServe("localhost:8080", r)
+	err = http.ListenAndServe("localhost:8081", r)
 	if err != nil {
 		log.Fatal("starting server error", err)
 	}
