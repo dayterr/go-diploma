@@ -12,6 +12,8 @@ type Storager interface {
 	GetListOrders(userID int) ([]OrderModel, error)
 	UpdateOrders(order OrderModel) error
 	FindUser(orderNumber int) (int64, error)
+	GetBalance(userID int) (float64, error)
+	UpdateBalance(balance float64, userID int) error
 }
 
 type UserStorage struct {
@@ -32,4 +34,10 @@ type OrderModel struct {
 	Accrual float64
 	UploadedAt string
 	UserID int
+}
+
+type BalanceModel struct {
+	ID int
+	Current float64
+	Withdrawn float64
 }

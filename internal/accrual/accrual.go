@@ -34,7 +34,16 @@ func (ac AccrualClient) ManagePoints(orderNumber int) {
 
 		switch order.Status {
 		case "PROCESSED":
-			ac.Storage.FindUser(order.Number)
+			userID, err := ac.Storage.FindUser(orderNumber)
+			if err != nil {
+				log.Println("getting user error", err)
+			}
+			balance, err := ac.Storage.GetBalance(int(userID))
+			if err != nil {
+				log.Println("getting balance error", err)
+			}
+			balance += order.Accrual
+			ac.Storage.UpdateBalance(balance, int(userID))
 		case "REGISTERED":
 			ac.OrderChannel <- orderNumber
 		case "PROCESSING":

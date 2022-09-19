@@ -205,3 +205,35 @@ func (us UserStorage) FindUser(orderNumber int) (int64, error) {
 
 	return userID, nil
 }
+
+func (us UserStorage) GetBalance(userID int) (float64, error) {
+	res, err := us.DB.Query(`SELECT id, current FROM balance WHERE user_id = $1`, userID)
+	if err != nil {
+		log.Println("getting balance error", err)
+		return 0, err
+	}
+	defer res.Close()
+
+	var currentBalance float64
+	for res.Next() {
+		err := res.Scan(&currentBalance)
+		if err != nil {
+			log.Println("scanning balance error", err)
+			return 0, err
+		}
+	}
+	return currentBalance, err
+}
+
+func (us UserStorage) UpdateBalance(balance float64, userID int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err := us.DB.ExecContext(ctx, `UPDATE balance SET current = $1 WHERE user_id = $2`,
+		balance, userID)
+	if err != nil {
+		log.Println("updating balance error", err)
+		return err
+	}
+	return nil
+}
