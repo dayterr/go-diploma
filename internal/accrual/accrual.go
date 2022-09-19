@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"encoding/json"
 )
 
 func (ac AccrualClient) ManagePoints(orderNumber int) {
