@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func NewUserDB(dsn string) (UserStorage, error) {
+func NewDB(dsn string) (UserStorage, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -169,4 +169,39 @@ func (us UserStorage) GetListOrders(userID int) ([]OrderModel, error) {
 	}
 
 	return orders, nil
+}
+
+func (us UserStorage) UpdateOrders(order OrderModel) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	log.Println("updating orders db")
+	_, err := us.DB.ExecContext(ctx, `UPDATE orders SET status = $1, 
+                  accrual = $2 WHERE number = $3`, order.Status, order.Accrual, order.Number)
+	if err != nil {
+		log.Println("updating order error", err)
+		return err
+	}
+
+	return nil
+}
+
+func (us UserStorage) FindUser(orderNumber int) (int64, error) {
+	res, err := us.DB.Query(`SELECT user_id FROM orders WHERE number = $1`, orderNumber)
+	if err != nil {
+		log.Println("finding user error", err)
+		return 0, err
+	}
+	defer res.Close()
+
+	var userID int64
+	if res.Next() {
+		err = res.Scan(&userID)
+		if err != nil {
+			log.Println("scanning userID error", err)
+			return 0, err
+		}
+	}
+
+	return userID, nil
 }

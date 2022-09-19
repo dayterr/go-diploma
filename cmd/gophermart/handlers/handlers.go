@@ -11,20 +11,21 @@ import (
 
 type AsyncHandler struct{
 	Auth Auth
+	OrderChannel chan int
 }
 
 type UserID string
 
-func NewAsyncHandler(dsn string) AsyncHandler {
+func NewAsyncHandler(dsn string, orderChannel chan int) AsyncHandler {
 	var auth Auth
 	var s storage.Storager
-	s, err := storage.NewUserDB(dsn)
+	s, err := storage.NewDB(dsn)
 	if err != nil {
 		log.Println("setting database error", err)
 	}
 	auth.Storage = s
 	auth.Key = ""
-	ah := AsyncHandler{Auth: auth}
+	ah := AsyncHandler{Auth: auth, OrderChannel: orderChannel}
 	return ah
 }
 
@@ -119,6 +120,8 @@ func (ah *AsyncHandler) LoadOrderNumber(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	ah.OrderChannel <- int(userID)
+
 	w.WriteHeader(http.StatusAccepted)
 }
 
@@ -145,6 +148,7 @@ func (ah AsyncHandler) LoadOrderList(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
 	w.WriteHeader(http.StatusOK)
+	log.Println(w.Header())
 }
 
 

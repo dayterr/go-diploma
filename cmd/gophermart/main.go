@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/dayterr/go-diploma/cmd/gophermart/handlers"
+	"github.com/dayterr/go-diploma/internal/accrual"
 	config2 "github.com/dayterr/go-diploma/internal/config"
 	"log"
 	"net/http"
@@ -12,9 +13,20 @@ func main() {
 	if err != nil {
 		log.Fatal("no config, can't start the program")
 	}
-	ah := handlers.NewAsyncHandler(config.DatabaseURI)
+
+	orderChannel := make(chan int)
+	ah := handlers.NewAsyncHandler(config.DatabaseURI, orderChannel)
 	r := handlers.CreateRouterWithAsyncHandler(ah)
+
+	ac := accrual.NewAccrualClient(config.AccrualSystemAddress, config.DatabaseURI, orderChannel)
+	go func() {
+		for num := range orderChannel{
+			ac.ManagePoints(num)
+		}
+	}()
+
 	err = http.ListenAndServe(config.RunAddress, r)
+
 	if err != nil {
 		log.Fatal("starting server error", err)
 	}

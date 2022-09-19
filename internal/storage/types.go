@@ -10,6 +10,8 @@ type Storager interface {
 	GetOrder(orderNumber int) (OrderModel, error)
 	AddOrder(orderNumber, userID int) (int64, error)
 	GetListOrders(userID int) ([]OrderModel, error)
+	UpdateOrders(order OrderModel) error
+	FindUser(orderNumber int) (int64, error)
 }
 
 type UserStorage struct {
