@@ -14,6 +14,7 @@ type Storager interface {
 	FindUser(orderNumber int) (int64, error)
 	GetBalance(userID int) (float64, error)
 	UpdateBalance(balance float64, userID int) error
+	GetFullInfoBalance(userID int) (BalanceModel, error)
 }
 
 type UserStorage struct {

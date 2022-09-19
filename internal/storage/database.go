@@ -237,3 +237,21 @@ func (us UserStorage) UpdateBalance(balance float64, userID int) error {
 	}
 	return nil
 }
+
+func (us UserStorage) GetFullInfoBalance(userID int) (BalanceModel, error) {
+	res, err := us.DB.Query(`SELECT current, withdrawn FROM balance WHERE user_id = $1`, userID)
+	if err != nil {
+		log.Println("getting balance error", err)
+		return BalanceModel{}, err
+	}
+
+	var balance BalanceModel
+	for res.Next() {
+		err = res.Scan(&balance.Current, &balance.Withdrawn)
+		if err != nil {
+			log.Println("scanning balance error", err)
+			return BalanceModel{}, err
+		}
+	}
+	return balance, nil
+}

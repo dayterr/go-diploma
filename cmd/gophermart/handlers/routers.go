@@ -17,6 +17,7 @@ func CreateRouterWithAsyncHandler(ah AsyncHandler) chi.Router {
 		r.Post("/login", ah.LogUser)
 		r.Post("/orders", ah.LoadOrderNumber)
 		r.Get("/orders", ah.LoadOrderList)
+		r.Get("/balance", ah.GetBalance)
 	})
 	return r
 }

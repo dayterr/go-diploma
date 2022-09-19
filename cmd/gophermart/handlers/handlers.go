@@ -148,7 +148,23 @@ func (ah AsyncHandler) LoadOrderList(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
 	w.WriteHeader(http.StatusOK)
-	log.Println(w.Header())
+}
+func (ah AsyncHandler) GetBalance(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value("userid").(int64)
+
+	balance, err := ah.Auth.Storage.GetFullInfoBalance(int(userID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	body, err := json.Marshal(&balance)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(body)
+	w.WriteHeader(http.StatusOK)
 }
 
 
