@@ -120,7 +120,7 @@ func (ah *AsyncHandler) LoadOrderNumber(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	ah.OrderChannel <- int(userID)
+	ah.OrderChannel <- orderNumber
 
 	w.WriteHeader(http.StatusAccepted)
 }
