@@ -14,7 +14,7 @@ func main() {
 	}
 	ah := handlers.NewAsyncHandler(config.DatabaseURI)
 	r := handlers.CreateRouterWithAsyncHandler(ah)
-	err = http.ListenAndServe("localhost:8081", r)
+	err = http.ListenAndServe(config.RunAddress, r)
 	if err != nil {
 		log.Fatal("starting server error", err)
 	}
