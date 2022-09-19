@@ -20,8 +20,7 @@ func main() {
 
 	ac := accrual.NewAccrualClient(config.AccrualSystemAddress, config.DatabaseURI, orderChannel)
 	go func() {
-		for num := range orderChannel{
-			log.Println("num is", <-orderChannel, num)
+		for {
 			ac.ManagePoints(<-orderChannel)
 		}
 	}()
