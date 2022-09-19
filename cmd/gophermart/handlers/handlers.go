@@ -103,8 +103,7 @@ func (ah *AsyncHandler) LoadOrderNumber(w http.ResponseWriter, r *http.Request) 
 
 	log.Println(order)
 
-	userID := r.Context().Value("username").(int64)
-
+	userID := r.Context().Value("userid").(int64)
 
 	if int(userID) == order.UserID {
 		w.WriteHeader(http.StatusOK)
@@ -121,6 +120,32 @@ func (ah *AsyncHandler) LoadOrderNumber(w http.ResponseWriter, r *http.Request) 
 	}
 
 	w.WriteHeader(http.StatusAccepted)
+}
+
+func (ah AsyncHandler) LoadOrderList(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value("userid").(int64)
+
+	orders, err := ah.Auth.Storage.GetListOrders(int(userID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if len(orders) == 0 {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	body, err := json.Marshal(&orders)
+	if err != err {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(body)
+	w.Header().Set("Content-Type", "application/json")
+
 }
 
 

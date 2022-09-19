@@ -141,3 +141,32 @@ func (us UserStorage) AddOrder(orderNumber, userID int) (int64, error) {
 	id, _ := res.LastInsertId()
 	return id, err
 }
+
+func (us UserStorage) GetListOrders(userID int) ([]OrderModel, error) {
+
+	log.Println("getting user orders from database")
+	res, err := us.DB.Query(`SELECT number, status, accrual, uploaded_at from orders WHERE user_id = $1`, userID)
+	if err != nil {
+		log.Println("getting orders error", err)
+		return []OrderModel{}, err
+	}
+	defer res.Close()
+
+	var orders []OrderModel
+	for res.Next() {
+		order := OrderModel{}
+		err = res.Scan(&order.Number, &order.Status, &order.Accrual, &order.UploadedAt)
+		if err != nil {
+			log.Println("scanning order error", err)
+			return []OrderModel{}, err
+		}
+		orders = append(orders, order)
+	}
+
+	if res.Err() != nil{
+		log.Println("some row error", err)
+		return []OrderModel{}, err
+	}
+
+	return orders, nil
+}
