@@ -147,6 +147,7 @@ func (ah AsyncHandler) LoadOrderList(w http.ResponseWriter, r *http.Request) {
 	w.Write(body)
 	w.WriteHeader(http.StatusOK)
 }
+
 func (ah AsyncHandler) GetBalance(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value("userid").(int64)
 

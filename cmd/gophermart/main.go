@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"github.com/dayterr/go-diploma/cmd/gophermart/handlers"
 	"github.com/dayterr/go-diploma/internal/accrual"
 	config2 "github.com/dayterr/go-diploma/internal/config"
 	"log"
 	"net/http"
+	"time"
 )
 
 func main() {
@@ -15,14 +15,16 @@ func main() {
 		log.Fatal("no config, can't start the program")
 	}
 
+	ticker := time.NewTicker(3 * time.Second)
+
 	orderChannel := make(chan int)
 	ah := handlers.NewAsyncHandler(config.DatabaseURI, orderChannel)
 	r := handlers.CreateRouterWithAsyncHandler(ah)
 
 	ac := accrual.NewAccrualClient(config.AccrualSystemAddress, config.DatabaseURI, orderChannel)
 	go func() {
-		for ord := range orderChannel {
-			fmt.Println("oy", ord)
+		for {
+			<- ticker.C
 			ac.ManagePoints(<-orderChannel)
 		}
 	}()
