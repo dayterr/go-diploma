@@ -83,6 +83,10 @@ func (us UserStorage) AddUser(user UserModel) (int64, error) {
 		log.Println("user creation error:", err)
 		return 0, err
 	}
+	if res.Err() != nil {
+		log.Println("some row error", err)
+		return 0, err
+	}
 
 	var id int64
 	for res.Next() {
@@ -142,7 +146,7 @@ func (us UserStorage) AddOrder(orderNumber, userID int) (int64, error) {
 	defer cancel()
 
 	log.Println("writing order to database")
-	res, err := us.DB.ExecContext(ctx,
+	res, err := us.DB.QueryContext(ctx,
 		`INSERT INTO orders (number, status, accrual, uploaded_at, user_id) 
                     VALUES ($1, $2, $3, $4, $5) RETURNING id`,
                     orderNumber, "NEW", 0.0, time.Now().Format(time.RFC3339), userID)
@@ -150,8 +154,16 @@ func (us UserStorage) AddOrder(orderNumber, userID int) (int64, error) {
 		log.Println("order creation error:", err)
 		return 0, err
 	}
-	id, _ := res.LastInsertId()
-	return id, err
+
+	var id int64
+	for res.Next() {
+		err = res.Scan(&id)
+		if err != nil {
+			log.Println("scanning id error", err)
+			return 0, err
+		}
+	}
+	return id, nil
 }
 
 func (us UserStorage) GetListOrders(userID int) ([]OrderModel, error) {

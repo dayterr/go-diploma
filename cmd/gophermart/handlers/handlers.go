@@ -94,7 +94,6 @@ func (ah *AsyncHandler) PostOrder(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	log.Println("orderNumber is", orderNumber)
 
 	/*if !CheckLuhn(orderNumber) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
