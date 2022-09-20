@@ -118,9 +118,8 @@ func (ah *AsyncHandler) PostOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("adding chan")
 	ah.OrderChannel <- orderNumber
-	log.Println("added chan")
+
 	w.WriteHeader(http.StatusAccepted)
 }
 
