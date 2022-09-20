@@ -87,6 +87,7 @@ func (us UserStorage) AddUser(user UserModel) (int64, error) {
 		log.Println("some row error", err)
 		return 0, err
 	}
+	defer res.Close()
 
 	var id int64
 	for res.Next() {
@@ -129,6 +130,7 @@ FROM orders WHERE number = $1`, orderNumber)
 		log.Println("some row error", err)
 		return OrderModel{}, err
 	}
+	defer res.Close()
 
 	for res.Next() {
 		err = res.Scan(&order.ID, &order.Number, &order.Status, &order.Accrual,
@@ -158,6 +160,7 @@ func (us UserStorage) AddOrder(orderNumber, userID int) (int64, error) {
 		log.Println("some row error", err)
 		return 0, err
 	}
+	defer res.Close()
 
 	var id int64
 	for res.Next() {
@@ -284,6 +287,7 @@ func (us UserStorage) GetFullInfoBalance(userID int) (BalanceModel, error) {
 		log.Println("some row error", err)
 		return BalanceModel{}, err
 	}
+	defer res.Close()
 
 	var balance BalanceModel
 	for res.Next() {
