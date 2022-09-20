@@ -40,7 +40,6 @@ func (a Auth) RegisterNewUser(user User, key string) (string, error) {
 	modelUser.Password = EncryptPassword(user.Password, key)
 
 	id, err := a.Storage.AddUser(modelUser)
-	id += 1
 	log.Println("user id is", id)
 	if err != nil {
 		log.Println("adding user error", err)
