@@ -40,6 +40,11 @@ func (a Auth) RegisterNewUser(user User, key string) (string, error) {
 	modelUser.Password = EncryptPassword(user.Password, key)
 
 	id, err := a.Storage.AddUser(modelUser)
+	if err != nil {
+		log.Println("adding user error", err)
+		return "", err
+	}
+
 	token, err := createToken(id, key)
 	return token, err
 }
@@ -74,7 +79,7 @@ func (a Auth) AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "userid", claims.UserID)
+		ctx := context.WithValue(r.Context(), UserIDKey("userid"), claims.UserID)
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 
@@ -84,9 +89,14 @@ func (a Auth) AuthMiddleware(next http.Handler) http.Handler {
 func (a Auth) LogUser(user User, key string) (string, error) {
 	var modelUser storage.UserModel
 	modelUser.Name = user.Name
-	modelUser.Password = EncryptPassword(user.Password, key)
+	//modelUser.Password = EncryptPassword(user.Password, key)
 
 	id, err := a.Storage.GetUser(modelUser.Name)
+	if err != nil {
+		log.Println("getting user error", err)
+		return "", err
+	}
+
 	token, err := createToken(id, key)
 	return token, err
 }

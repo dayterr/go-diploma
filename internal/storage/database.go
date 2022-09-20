@@ -113,6 +113,10 @@ FROM orders WHERE number = $1`, orderNumber)
 		log.Println("getting order error", err)
 		return OrderModel{}, nil
 	}
+	if res.Err() != nil{
+		log.Println("some row error", err)
+		return OrderModel{}, err
+	}
 
 	for res.Next() {
 		err = res.Scan(&order.ID, &order.Number, &order.Status, &order.Accrual,
@@ -193,6 +197,10 @@ func (us UserStorage) FindUser(orderNumber int) (int64, error) {
 		return 0, err
 	}
 	defer res.Close()
+	if res.Err() != nil{
+		log.Println("some row error", err)
+		return 0, err
+	}
 
 	var userID int64
 	if res.Next() {
@@ -213,6 +221,10 @@ func (us UserStorage) GetBalance(userID int) (float64, error) {
 		return 0, err
 	}
 	defer res.Close()
+	if res.Err() != nil{
+		log.Println("some row error", err)
+		return 0, err
+	}
 
 	var currentBalance float64
 	for res.Next() {
@@ -242,6 +254,10 @@ func (us UserStorage) GetFullInfoBalance(userID int) (BalanceModel, error) {
 	res, err := us.DB.Query(`SELECT current, withdrawn FROM balance WHERE user_id = $1`, userID)
 	if err != nil {
 		log.Println("getting balance error", err)
+		return BalanceModel{}, err
+	}
+	if res.Err() != nil{
+		log.Println("some row error", err)
 		return BalanceModel{}, err
 	}
 

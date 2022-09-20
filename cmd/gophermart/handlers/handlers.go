@@ -101,8 +101,13 @@ func (ah *AsyncHandler) LoadOrderNumber(w http.ResponseWriter, r *http.Request) 
 	}*/
 
 	order, err := ah.Auth.Storage.GetOrder(orderNumber)
+	if err != nil {
+		log.Println("getting order error", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
-	userID := r.Context().Value("userid").(int64)
+	userID := r.Context().Value(UserIDKey("userid")).(int64)
 
 	if int(userID) == order.UserID {
 		w.WriteHeader(http.StatusOK)
