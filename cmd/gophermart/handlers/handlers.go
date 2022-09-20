@@ -129,7 +129,7 @@ func (ah *AsyncHandler) LoadOrderNumber(w http.ResponseWriter, r *http.Request) 
 }
 
 func (ah AsyncHandler) LoadOrderList(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userid").(int64)
+	userID := r.Context().Value(UserIDKey("userid")).(int64)
 
 	orders, err := ah.Auth.Storage.GetListOrders(int(userID))
 	if err != nil {
