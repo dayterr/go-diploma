@@ -154,7 +154,7 @@ func (ah AsyncHandler) LoadOrderList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ah AsyncHandler) GetBalance(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userid").(int64)
+	userID := r.Context().Value(UserIDKey("userid")).(int64)
 
 	balance, err := ah.Auth.Storage.GetFullInfoBalance(int(userID))
 	if err != nil {
