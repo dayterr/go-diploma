@@ -1,12 +1,11 @@
 package handlers
 
 import (
+	"encoding/json"
 	"github.com/dayterr/go-diploma/internal/storage"
 	"io"
 	"log"
 	"net/http"
-	"encoding/json"
-	"strconv"
 )
 
 type AsyncHandler struct{
@@ -16,7 +15,7 @@ type AsyncHandler struct{
 
 type UserID string
 
-func NewAsyncHandler(dsn string, orderChannel chan int) AsyncHandler {
+func NewAsyncHandler(dsn string, orderChannel chan string) AsyncHandler {
 	var auth Auth
 	var s storage.Storager
 	s, err := storage.NewDB(dsn)
