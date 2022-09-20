@@ -8,7 +8,7 @@ import (
 type AccrualClient struct {
 	Address string
 	Storage storage.Storager
-	OrderChannel chan int
+	OrderChannel chan string
 }
 
 func NewAccrualClient(address, databaseURI string, orderChannel chan int) AccrualClient {

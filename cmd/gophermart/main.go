@@ -14,7 +14,7 @@ func main() {
 		log.Fatal("no config, can't start the program")
 	}
 
-	orderChannel := make(chan int)
+	orderChannel := make(chan string)
 	ah := handlers.NewAsyncHandler(config.DatabaseURI, orderChannel)
 	r := handlers.CreateRouterWithAsyncHandler(ah)
 
