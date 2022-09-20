@@ -9,7 +9,7 @@ import (
 	"encoding/json"
 )
 
-func (ac AccrualClient) ManagePoints(orderNumber int) {
+func (ac AccrualClient) ManagePoints(orderNumber string) {
 	url := fmt.Sprintf("http://%s/api/orders/%d", ac.Address, orderNumber)
 	resp, err := http.Get(url)
 	if err != nil {

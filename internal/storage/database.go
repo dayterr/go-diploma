@@ -113,7 +113,7 @@ func (us UserStorage) GetUser(username string) (int64, error) {
 	return userID, nil
 }
 
-func (us UserStorage) GetOrder(orderNumber int) (OrderModel, error) {
+func (us UserStorage) GetOrder(orderNumber string) (OrderModel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -143,7 +143,7 @@ FROM orders WHERE number = $1`, orderNumber)
 	return order, nil
 }
 
-func (us UserStorage) AddOrder(orderNumber, userID int) (int64, error) {
+func (us UserStorage) AddOrder(orderNumber string, userID int) (int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -217,7 +217,7 @@ func (us UserStorage) UpdateOrders(order OrderModel) error {
 	return nil
 }
 
-func (us UserStorage) FindUser(orderNumber int) (int64, error) {
+func (us UserStorage) FindUser(orderNumber string) (int64, error) {
 	res, err := us.DB.Query(`SELECT user_id FROM orders WHERE number = $1`, orderNumber)
 	if err != nil {
 		log.Println("finding user error", err)
