@@ -154,6 +154,10 @@ func (us UserStorage) AddOrder(orderNumber, userID int) (int64, error) {
 		log.Println("order creation error:", err)
 		return 0, err
 	}
+	if res.Err() != nil {
+		log.Println("some row error", err)
+		return 0, err
+	}
 
 	var id int64
 	for res.Next() {
