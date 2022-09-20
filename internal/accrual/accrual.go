@@ -10,6 +10,7 @@ import (
 )
 
 func (ac AccrualClient) ManagePoints(orderNumber int) {
+	log.Println("printing url")
 	url := fmt.Sprintf("http://%s/api/orders/%d", ac.Address, orderNumber)
 	resp, err := http.Get(url)
 	if err != nil {
@@ -17,7 +18,6 @@ func (ac AccrualClient) ManagePoints(orderNumber int) {
 		return
 	}
 
-	log.Println("resp is", resp)
 	if resp.Status == "200 OK" {
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
