@@ -11,7 +11,7 @@ import (
 
 type AsyncHandler struct{
 	Auth Auth
-	OrderChannel chan int
+	OrderChannel chan string
 }
 
 type UserID string
@@ -89,11 +89,7 @@ func (ah *AsyncHandler) PostOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orderNumber, err := strconv.Atoi(string(body))
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	orderNumber := string(body)
 
 	/*if !CheckLuhn(orderNumber) {
 		w.WriteHeader(http.StatusUnprocessableEntity)

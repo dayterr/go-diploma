@@ -10,7 +10,7 @@ import (
 )
 
 func (ac AccrualClient) ManagePoints(orderNumber string) {
-	url := fmt.Sprintf("http://%s/api/orders/%d", ac.Address, orderNumber)
+	url := fmt.Sprintf("http://%s/api/orders/%s", ac.Address, orderNumber)
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Println("getting accrual error", err)
