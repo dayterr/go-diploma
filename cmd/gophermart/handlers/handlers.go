@@ -102,8 +102,6 @@ func (ah *AsyncHandler) LoadOrderNumber(w http.ResponseWriter, r *http.Request) 
 
 	order, err := ah.Auth.Storage.GetOrder(orderNumber)
 
-	log.Println(order)
-
 	userID := r.Context().Value("userid").(int64)
 
 	if int(userID) == order.UserID {

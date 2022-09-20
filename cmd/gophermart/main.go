@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/dayterr/go-diploma/cmd/gophermart/handlers"
 	"github.com/dayterr/go-diploma/internal/accrual"
 	config2 "github.com/dayterr/go-diploma/internal/config"
@@ -20,7 +21,8 @@ func main() {
 
 	ac := accrual.NewAccrualClient(config.AccrualSystemAddress, config.DatabaseURI, orderChannel)
 	go func() {
-		for {
+		for ord := range orderChannel {
+			fmt.Println("oy", ord)
 			ac.ManagePoints(<-orderChannel)
 		}
 	}()
