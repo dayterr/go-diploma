@@ -44,10 +44,13 @@ func (ac AccrualClient) ManagePoints(orderNumber string) {
 			}
 			balance += order.Accrual
 			ac.Storage.UpdateBalance(balance, int(userID))
+			break
 		case "REGISTERED":
 			ac.OrderChannel <- orderNumber
+			break
 		case "PROCESSING":
 			ac.OrderChannel <- orderNumber
+			break
 		}
 	} else {
 		ac.OrderChannel <- orderNumber
