@@ -11,7 +11,7 @@ type AccrualClient struct {
 	OrderChannel chan string
 }
 
-func NewAccrualClient(address, databaseURI string, orderChannel chan int) AccrualClient {
+func NewAccrualClient(address, databaseURI string, orderChannel chan string) AccrualClient {
 	storage, err := storage.NewDB(databaseURI)
 	if err != nil {
 		log.Println("setting database error", err)
