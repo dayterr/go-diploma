@@ -30,7 +30,7 @@ type UserModel struct {
 
 type OrderModel struct {
 	ID int
-	Number int
+	Number string
 	Status string
 	Accrual float64
 	UploadedAt string
