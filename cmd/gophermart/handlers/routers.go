@@ -15,7 +15,7 @@ func CreateRouterWithAsyncHandler(ah AsyncHandler) chi.Router {
 	r.Route("/api/user", func(r chi.Router) {
 		r.Post("/register", ah.RegisterUser)
 		r.Post("/login", ah.LogUser)
-		r.Post("/orders", ah.LoadOrderNumber)
+		r.Post("/orders", ah.PostOrder)
 		r.Get("/orders", ah.LoadOrderList)
 		r.Get("/balance", ah.GetBalance)
 	})

@@ -76,14 +76,22 @@ func (us UserStorage) AddUser(user UserModel) (int64, error) {
 	defer cancel()
 
 	log.Println("writing user to database")
-	res, err := us.DB.ExecContext(ctx,
+	res, err := us.DB.QueryContext(ctx,
 		`INSERT INTO users (login, password) VALUES ($1, $2) RETURNING id`,
 		user.Name, user.Password)
 	if err != nil {
 		log.Println("user creation error:", err)
 		return 0, err
 	}
-	id, _ := res.LastInsertId()
+
+	var id int64
+	for res.Next() {
+		err = res.Scan(&id)
+		if err != nil {
+			log.Println("scanning id error", err)
+			return 0, err
+		}
+	}
 	return id, err
 }
 
