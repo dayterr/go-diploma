@@ -206,5 +206,37 @@ func (ah *AsyncHandler) WithdrawPoints(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = ah.Auth.Storage.AddWithdrawal(withdraw.Sum, withdraw.Order, int(userID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
+}
+
+func (ah *AsyncHandler) GetListWithdrawal(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value(UserIDKey("userid")).(int64)
+
+	withdrawals, err := ah.Auth.Storage.GetListWithdrawal(int(userID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if len(withdrawals) == 0 {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	body, err := json.Marshal(&withdrawals)
+	if err != err {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(body)
+	w.WriteHeader(http.StatusOK)
+
 }

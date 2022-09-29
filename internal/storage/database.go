@@ -56,7 +56,7 @@ func NewDB(dsn string) (UserStorage, error) {
 		`CREATE TABLE IF NOT EXISTS withdrawals (id serial PRIMARY KEY, 
                                        order_number BIGINT UNIQUE NOT NULL,
                                        sum INT NOT NULL, 
-                                       uploaded_at TIMESTAMP WITH TIME ZONE NOT NULL,
+                                       processed_at TIMESTAMP WITH TIME ZONE NOT NULL,
                                        user_id INT NOT NULL,
                                        FOREIGN KEY (user_id) REFERENCES public.users(id),
     								   FOREIGN KEY (order_number) REFERENCES public.orders(number));`)
@@ -302,6 +302,50 @@ func (us UserStorage) GetFullInfoBalance(userID int) (BalanceModel, error) {
 			return BalanceModel{}, err
 		}
 	}
-	log.Println("bal is", balance)
+
 	return balance, nil
+}
+
+func (us UserStorage) AddWithdrawal(withdrawn float64, orderNumber string, userID int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	log.Println("adding points withdrawl")
+	_, err := us.DB.QueryContext(ctx, `INSERT INTO withdrawals (order_number, sum, processed_at, user_id) 
+                        VALUES ($1, $2, $3, $3)`, orderNumber, withdrawn, time.Now(), userID)
+	if err != nil {
+		log.Println("adding withdrawal error", err)
+		return err
+	}
+
+	return nil
+}
+
+func (us UserStorage) GetListWithdrawal(userID int) ([]Withdraw, error) {
+	log.Println("getting user withdrawals from database")
+	res, err := us.DB.Query(`SELECT order_number, sum, processed_at from withdrawals WHERE user_id = $1`,
+		userID)
+	if err != nil {
+		log.Println("getting withdrawals error", err)
+		return []Withdraw{}, err
+	}
+	defer res.Close()
+
+	var withdrawals []Withdraw
+	for res.Next() {
+		withdrawal := Withdraw{}
+		err = res.Scan(&withdrawal.Order, &withdrawal.Sum, &withdrawal.ProcessedAt, &withdrawal.UserID)
+		if err != nil {
+			log.Println("scanning order error", err)
+			return []Withdraw{}, err
+		}
+		withdrawals = append(withdrawals, withdrawal)
+	}
+
+	if res.Err() != nil{
+		log.Println("some row error", err)
+		return []Withdraw{}, err
+	}
+
+	return withdrawals, nil
 }

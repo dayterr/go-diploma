@@ -15,6 +15,8 @@ type Storager interface {
 	GetBalance(userID int) (float64, error)
 	UpdateBalance(balance, withdrawn float64, userID int) error
 	GetFullInfoBalance(userID int) (BalanceModel, error)
+	AddWithdrawal(withdrawn float64, orderNumber string, userID int) error
+	GetListWithdrawal(userID int) ([]Withdraw, error)
 }
 
 type UserStorage struct {
@@ -47,5 +49,6 @@ type Withdraw struct {
 	ID int
 	Order string
 	Sum float64
+	ProcessedAt string
 	UserID int
 }
