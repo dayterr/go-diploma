@@ -19,7 +19,7 @@ func CreateRouterWithAsyncHandler(ah *AsyncHandler) chi.Router {
 		r.Get("/orders", ah.LoadOrderList)
 		r.Get("/balance", ah.GetBalance)
 		r.Post("/balance/withdraw", ah.WithdrawPoints)
-		r.Get("/withdrawals", )
+		r.Get("/withdrawals", ah.GetListWithdrawal)
 	})
 	return r
 }
