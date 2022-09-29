@@ -19,12 +19,7 @@ func main() {
 	r := handlers.CreateRouterWithAsyncHandler(ah)
 
 	ac := accrual.NewAccrualClient(config.AccrualSystemAddress, config.DatabaseURI, orderChannel)
-	go func() {
-		for ord := range orderChannel {
-			ac.ManagePoints(ord)
-		}
-	}()
-
+	go ac.ReadOrderNumber()
 	err = http.ListenAndServe(config.RunAddress, r)
 
 	if err != nil {

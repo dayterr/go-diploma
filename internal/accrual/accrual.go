@@ -52,5 +52,10 @@ func (ac AccrualClient) ManagePoints(orderNumber string) {
 	} else {
 		ac.OrderChannel <- orderNumber
 	}
+}
 
+func (ac AccrualClient) ReadOrderNumber() {
+	for ord := range ac.OrderChannel {
+		ac.ManagePoints(ord)
+	}
 }
