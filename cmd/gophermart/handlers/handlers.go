@@ -155,10 +155,14 @@ func (ah AsyncHandler) LoadOrderList(w http.ResponseWriter, r *http.Request) {
 func (ah AsyncHandler) GetBalance(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value(UserIDKey("userid")).(int64)
 
+	log.Println("user is", userID)
+
 	balance, err := ah.Auth.Storage.GetFullInfoBalance(int(userID))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
+
+	log.Println("balance is", balance)
 
 	body, err := json.Marshal(&balance)
 	if err != nil {
