@@ -276,7 +276,8 @@ func (us UserStorage) UpdateBalance(balance float64, userID int) error {
 		log.Println("updating balance error", err)
 		return err
 	}
-	log.Println("res is", res)
+	n, err := res.RowsAffected()
+	log.Println("res is", n, err)
 	return nil
 }
 
