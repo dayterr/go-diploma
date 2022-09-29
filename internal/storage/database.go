@@ -264,7 +264,7 @@ func (us UserStorage) GetBalance(userID int) (float64, error) {
 	return currentBalance, err
 }
 
-func (us UserStorage) UpdateBalance(balance float64, userID int) error {
+func (us UserStorage) UpdateBalance(balance, withdrawn float64, userID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
