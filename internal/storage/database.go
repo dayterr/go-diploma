@@ -269,6 +269,8 @@ func (us UserStorage) UpdateBalance(balance float64, userID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	log.Println("balance, user", balance, userID)
+
 	log.Println("updating user balance")
 	res, err := us.DB.ExecContext(ctx, `UPDATE balance SET current = $1 WHERE user_id = $2`,
 		balance, userID)
