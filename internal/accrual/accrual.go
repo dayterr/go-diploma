@@ -33,7 +33,7 @@ func (ac AccrualClient) ManagePoints(orderNumber string) {
 			log.Println("unmarshalling response error", err)
 		}
 		order.Number = orderNumber
-		log.Println("order is", order.Accrual)
+		log.Println("order is", order.Status)
 		ac.Storage.UpdateOrders(order)
 
 		switch order.Status {
