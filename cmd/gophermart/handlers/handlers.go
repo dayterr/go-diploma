@@ -127,7 +127,7 @@ func (ah *AsyncHandler) PostOrder(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 }
 
-func (ah AsyncHandler) LoadOrderList(w http.ResponseWriter, r *http.Request) {
+func (ah *AsyncHandler) LoadOrderList(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value(UserIDKey("userid")).(int64)
 
 	orders, err := ah.Auth.Storage.GetListOrders(int(userID))
@@ -152,17 +152,13 @@ func (ah AsyncHandler) LoadOrderList(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (ah AsyncHandler) GetBalance(w http.ResponseWriter, r *http.Request) {
+func (ah *AsyncHandler) GetBalance(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value(UserIDKey("userid")).(int64)
-
-	log.Println("user is", userID)
 
 	balance, err := ah.Auth.Storage.GetFullInfoBalance(int(userID))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-
-	log.Println("balance is", balance)
 
 	body, err := json.Marshal(&balance)
 	if err != nil {
@@ -174,4 +170,41 @@ func (ah AsyncHandler) GetBalance(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func (ah *AsyncHandler) WithdrawPoints(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value(UserIDKey("userid")).(int64)
 
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	var withdraw storage.Withdraw
+
+	err = json.Unmarshal(body, &withdraw)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	balance, err := ah.Auth.Storage.GetBalance(int(userID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if withdraw.Sum > balance {
+		w.WriteHeader(http.StatusPaymentRequired)
+		return
+	}
+
+	diff := balance - withdraw.Sum
+	err = ah.Auth.Storage.UpdateBalance(diff, int(userID))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}

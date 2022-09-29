@@ -206,7 +206,6 @@ func (us UserStorage) UpdateOrders(order OrderModel) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	log.Println("order number is", order.Number)
 	log.Println("updating orders db")
 	_, err := us.DB.ExecContext(ctx, `UPDATE orders SET status = $1, 
                   accrual = $2 WHERE number = $3`, order.Status, order.Accrual, order.Number)
@@ -268,8 +267,6 @@ func (us UserStorage) GetBalance(userID int) (float64, error) {
 func (us UserStorage) UpdateBalance(balance float64, userID int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	log.Println("balance, user", balance, userID)
 
 	log.Println("updating user balance")
 	res, err := us.DB.ExecContext(ctx, `INSERT INTO balance (current, withdrawn, uploaded_at, user_id) 

@@ -42,3 +42,9 @@ type BalanceModel struct {
 	Current float64
 	Withdrawn float64
 }
+
+type Withdraw struct {
+	ID int
+	Order string
+	Sum float64
+}
