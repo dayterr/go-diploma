@@ -312,7 +312,7 @@ func (us UserStorage) AddWithdrawal(withdrawn float64, orderNumber string, userI
 
 	log.Println("adding points withdrawl")
 	_, err := us.DB.QueryContext(ctx, `INSERT INTO withdrawals (order_number, sum, processed_at, user_id) 
-                        VALUES ($1, $2, $3, $3)`, orderNumber, withdrawn, time.Now(), userID)
+                        VALUES ($1, $2, $3, $4)`, orderNumber, withdrawn, time.Now(), userID)
 	if err != nil {
 		log.Println("adding withdrawal error", err)
 		return err
