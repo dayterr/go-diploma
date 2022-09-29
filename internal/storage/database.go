@@ -291,6 +291,7 @@ func (us UserStorage) GetFullInfoBalance(userID int) (BalanceModel, error) {
 	}
 	defer res.Close()
 
+	log.Println("res is", res)
 	var balance BalanceModel
 	for res.Next() {
 		err = res.Scan(&balance.Current, &balance.Withdrawn)
@@ -299,5 +300,6 @@ func (us UserStorage) GetFullInfoBalance(userID int) (BalanceModel, error) {
 			return BalanceModel{}, err
 		}
 	}
+	log.Println("bal is", balance)
 	return balance, nil
 }
