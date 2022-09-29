@@ -17,6 +17,7 @@ func (ac AccrualClient) ManagePoints(orderNumber string) {
 		log.Println("getting accrual error", err)
 		return
 	}
+	log.Println("resp is", resp)
 
 	if resp.Status == "200 OK" {
 		body, err := io.ReadAll(resp.Body)
