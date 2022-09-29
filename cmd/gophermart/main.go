@@ -20,6 +20,8 @@ func main() {
 
 	ac := accrual.NewAccrualClient(config.AccrualSystemAddress, config.DatabaseURI, orderChannel)
 	ah.AccrualClient = ac
+	
+	//go ah.AccrualClient.ReadOrderNumber()
 
 	err = http.ListenAndServe(config.RunAddress, r)
 

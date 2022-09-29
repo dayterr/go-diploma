@@ -32,6 +32,7 @@ func (ac AccrualClient) ManagePoints(orderNumber string) {
 		if err != nil {
 			log.Println("unmarshalling response error", err)
 		}
+		log.Println("order is", order)
 		ac.Storage.UpdateOrders(order)
 
 		switch order.Status {
