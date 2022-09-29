@@ -13,7 +13,7 @@ type Storager interface {
 	UpdateOrders(order OrderModel) error
 	FindUser(orderNumber string) (int64, error)
 	GetBalance(userID int) (float64, error)
-	UpdateBalance(balance float64, userID int) error
+	UpdateBalance(balance, withdrawn float64, userID int) error
 	GetFullInfoBalance(userID int) (BalanceModel, error)
 }
 
