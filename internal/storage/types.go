@@ -47,4 +47,5 @@ type Withdraw struct {
 	ID int
 	Order string
 	Sum float64
+	UserID int
 }

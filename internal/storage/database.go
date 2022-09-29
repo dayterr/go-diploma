@@ -270,8 +270,9 @@ func (us UserStorage) UpdateBalance(balance, withdrawn float64, userID int) erro
 
 	log.Println("updating user balance")
 	res, err := us.DB.ExecContext(ctx, `INSERT INTO balance (current, withdrawn, uploaded_at, user_id) 
-                     VALUES ($1, 0.0, $3, $2) 
-                     ON CONFLICT(user_id) DO UPDATE SET current = $1`, balance, userID, time.Now())
+                     VALUES ($1, $2, $4, $3) 
+                     ON CONFLICT(user_id) DO UPDATE SET current = $1, withdrawn = balance.withdrawn + $2`,
+                     balance, withdrawn, userID, time.Now())
 	if err != nil {
 		log.Println("updating balance error", err)
 		return err
