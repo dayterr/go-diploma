@@ -199,12 +199,12 @@ func (ah *AsyncHandler) WithdrawPoints(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	diff := balance - withdraw.Sum
+	/*diff := balance - withdraw.Sum
 	err = ah.Auth.Storage.UpdateBalance(diff, int(userID))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
-	}
+	}*/
 
 	w.WriteHeader(http.StatusOK)
 }
