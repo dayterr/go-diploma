@@ -10,14 +10,12 @@ import (
 )
 
 func (ac AccrualClient) ManagePoints(orderNumber string) {
-	log.Println("got ordernumber", orderNumber)
 	url := fmt.Sprintf("%s/api/orders/%s", ac.Address, orderNumber)
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Println("getting accrual error", err)
 		return
 	}
-	log.Println("resp is", resp)
 
 	if resp.Status == "200 OK" {
 		body, err := io.ReadAll(resp.Body)
@@ -47,30 +45,22 @@ func (ac AccrualClient) ManagePoints(orderNumber string) {
 				log.Println("getting balance error", err)
 			}
 			balance += order.Accrual
-			log.Println("user is", userID)
 			err = ac.Storage.UpdateBalance(balance, int(userID))
 			if err != nil {
 				log.Println("updating balance error", err)
 			}
 		case "REGISTERED":
-			log.Println("REGISTERED", orderNumber)
 			ac.OrderChannel <- orderNumber
 		case "PROCESSING":
-			log.Println("PROCESSING", orderNumber)
 			ac.OrderChannel <- orderNumber
 		}
 	} else {
-		log.Println("other", orderNumber)
 		ac.OrderChannel <- orderNumber
 	}
 }
 
 func (ac AccrualClient) ReadOrderNumber() {
-	log.Println("ReadOrderNumber working")
-	log.Println("hoho", ac.OrderChannel)
 	for ord := range ac.OrderChannel {
-		log.Println("ord is", ord)
 		ac.ManagePoints(ord)
 	}
-
 }

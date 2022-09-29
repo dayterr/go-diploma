@@ -270,12 +270,13 @@ func (us UserStorage) UpdateBalance(balance float64, userID int) error {
 	defer cancel()
 
 	log.Println("updating user balance")
-	_, err := us.DB.ExecContext(ctx, `UPDATE balance SET current = $1 WHERE user_id = $2`,
+	res, err := us.DB.ExecContext(ctx, `UPDATE balance SET current = $1 WHERE user_id = $2`,
 		balance, userID)
 	if err != nil {
 		log.Println("updating balance error", err)
 		return err
 	}
+	log.Println("res is", res)
 	return nil
 }
 
@@ -290,9 +291,8 @@ func (us UserStorage) GetFullInfoBalance(userID int) (BalanceModel, error) {
 		return BalanceModel{}, err
 	}
 	defer res.Close()
-
-	log.Println("res is", res)
 	var balance BalanceModel
+
 	for res.Next() {
 		err = res.Scan(&balance.Current, &balance.Withdrawn)
 		if err != nil {
