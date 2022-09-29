@@ -120,7 +120,8 @@ func (ah *AsyncHandler) PostOrder(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("order saved")
 	log.Println(ah.AccrualClient.OrderChannel)
-	ah.AccrualClient.OrderChannel <- orderNumber
+	ah.AccrualClient.ManagePoints(orderNumber)
+	//ah.AccrualClient.OrderChannel <- orderNumber
 	log.Println("order added")
 
 	w.WriteHeader(http.StatusAccepted)
