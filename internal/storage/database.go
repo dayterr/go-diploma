@@ -45,7 +45,7 @@ func NewDB(dsn string) (UserStorage, error) {
                                    current DOUBLE PRECISION, 
                                    withdrawn DOUBLE PRECISION,
                                    uploaded_at TIMESTAMP WITH TIME ZONE NOT NULL,
-                                   user_id INT NOT NULL,
+                                   user_id INT NOT NULL UNIQUE,
                                    FOREIGN KEY (user_id) REFERENCES public.users(id));`)
 	if err != nil {
 		return UserStorage{}, err
