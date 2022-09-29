@@ -242,7 +242,7 @@ func (us UserStorage) FindUser(orderNumber string) (int64, error) {
 }
 
 func (us UserStorage) GetBalance(userID int) (float64, error) {
-	res, err := us.DB.Query(`SELECT id, current FROM balance WHERE user_id = $1`, userID)
+	res, err := us.DB.Query(`SELECT current FROM balance WHERE user_id = $1`, userID)
 	if err != nil {
 		log.Println("getting balance error", err)
 		return 0, err
