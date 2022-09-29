@@ -47,7 +47,11 @@ func (ac AccrualClient) ManagePoints(orderNumber string) {
 				log.Println("getting balance error", err)
 			}
 			balance += order.Accrual
-			ac.Storage.UpdateBalance(balance, int(userID))
+			log.Println("user is", userID)
+			err = ac.Storage.UpdateBalance(balance, int(userID))
+			if err != nil {
+				log.Println("updating balance error", err)
+			}
 		case "REGISTERED":
 			log.Println("REGISTERED", orderNumber)
 			ac.OrderChannel <- orderNumber
