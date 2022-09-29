@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/dayterr/go-diploma/internal/accrual"
 	"github.com/dayterr/go-diploma/internal/storage"
 	"io"
 	"log"
@@ -10,12 +11,12 @@ import (
 
 type AsyncHandler struct{
 	Auth Auth
-	OrderChannel chan string
+	AccrualClient accrual.AccrualClient
 }
 
 type UserID string
 
-func NewAsyncHandler(dsn string, orderChannel chan string) AsyncHandler {
+func NewAsyncHandler(dsn string) *AsyncHandler {
 	var auth Auth
 	var s storage.Storager
 	s, err := storage.NewDB(dsn)
@@ -24,8 +25,8 @@ func NewAsyncHandler(dsn string, orderChannel chan string) AsyncHandler {
 	}
 	auth.Storage = s
 	auth.Key = ""
-	ah := AsyncHandler{Auth: auth, OrderChannel: orderChannel}
-	return ah
+	ah := AsyncHandler{Auth: auth}
+	return &ah
 }
 
 func (ah *AsyncHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
@@ -117,8 +118,10 @@ func (ah *AsyncHandler) PostOrder(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	ah.OrderChannel <- orderNumber
+	log.Println("order saved")
+	log.Println(ah.AccrualClient.OrderChannel)
+	ah.AccrualClient.OrderChannel <- orderNumber
+	log.Println("order added")
 
 	w.WriteHeader(http.StatusAccepted)
 }

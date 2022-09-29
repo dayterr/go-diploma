@@ -5,7 +5,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func CreateRouterWithAsyncHandler(ah AsyncHandler) chi.Router {
+func CreateRouterWithAsyncHandler(ah *AsyncHandler) chi.Router {
 	r := chi.NewRouter()
 
 	r.Use(ah.Auth.AuthMiddleware)
