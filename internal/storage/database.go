@@ -55,7 +55,7 @@ func NewDB(dsn string) (UserStorage, error) {
 	_, err = db.ExecContext(ctx,
 		`CREATE TABLE IF NOT EXISTS withdrawals (id serial PRIMARY KEY, 
                                        order_number BIGINT UNIQUE NOT NULL,
-                                       sum INT NOT NULL, 
+                                       sum DOUBLE PRECISION NOT NULL, 
                                        processed_at TIMESTAMP WITH TIME ZONE NOT NULL,
                                        user_id INT NOT NULL,
                                        FOREIGN KEY (user_id) REFERENCES public.users(id),
