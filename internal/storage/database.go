@@ -268,7 +268,7 @@ func (us UserStorage) UpdateBalance(balance, withdrawn float64, userID int) erro
 	defer cancel()
 
 	log.Println("updating user balance")
-	res, err := us.DB.ExecContext(ctx, `INSERT INTO balance (current, withdrawn, uploaded_at, user_id) 
+	_, err := us.DB.ExecContext(ctx, `INSERT INTO balance (current, withdrawn, uploaded_at, user_id) 
                      VALUES ($1, $2, $4, $3) 
                      ON CONFLICT(user_id) DO UPDATE SET current = $1, withdrawn = balance.withdrawn + $2`,
                      balance, withdrawn, userID, time.Now())
@@ -276,8 +276,6 @@ func (us UserStorage) UpdateBalance(balance, withdrawn float64, userID int) erro
 		log.Println("updating balance error", err)
 		return err
 	}
-	n, err := res.RowsAffected()
-	log.Println("res is", n, err)
 	return nil
 }
 
@@ -310,10 +308,15 @@ func (us UserStorage) AddWithdrawal(withdrawn float64, orderNumber string, userI
 	defer cancel()
 
 	log.Println("adding points withdrawl")
-	_, err := us.DB.QueryContext(ctx, `INSERT INTO withdrawals (order_number, sum, processed_at, user_id) 
+	row, err := us.DB.QueryContext(ctx, `INSERT INTO withdrawals (order_number, sum, processed_at, user_id) 
                         VALUES ($1, $2, $3, $4)`, orderNumber, withdrawn, time.Now(), userID)
 	if err != nil {
 		log.Println("adding withdrawal error", err)
+		return err
+	}
+
+	if row.Err() != nil {
+		log.Println("some row error", err)
 		return err
 	}
 

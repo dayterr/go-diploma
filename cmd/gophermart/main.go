@@ -20,15 +20,16 @@ func main() {
 
 	ac := accrual.NewAccrualClient(config.AccrualSystemAddress, config.DatabaseURI, orderChannel)
 	ah.AccrualClient = ac
-	go func() {
+	/*go func() {
 		for {
 			select {
 			case <- ah.AccrualClient.OrderChannel:
 				ah.AccrualClient.ManagePoints(<- ah.AccrualClient.OrderChannel)
 			}
 		}
-	}()
-	//go ah.AccrualClient.ReadOrderNumber()
+	}()*/
+
+	go ah.AccrualClient.ReadOrderNumber()
 
 	err = http.ListenAndServe(config.RunAddress, r)
 
