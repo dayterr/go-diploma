@@ -39,7 +39,7 @@ func (ah *AsyncHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	token, err := ah.Auth.RegisterNewUser(u, "")
+	token, err := ah.RegisterNewUser(u, "")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -66,7 +66,7 @@ func (ah *AsyncHandler) LogUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	token, err := ah.Auth.LogUser(u, "")
+	token, err := ah.LogUserWithToken(u, "")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
