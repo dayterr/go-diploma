@@ -7,7 +7,6 @@ import (
 	"github.com/dayterr/go-diploma/internal/storage"
 	"log"
 	"net/http"
-	"syscall"
 )
 
 func main() {
