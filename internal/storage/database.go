@@ -58,8 +58,7 @@ func NewDB(dsn string) (UserStorage, error) {
                                        sum DOUBLE PRECISION NOT NULL, 
                                        processed_at TIMESTAMP WITH TIME ZONE NOT NULL,
                                        user_id INT NOT NULL,
-                                       FOREIGN KEY (user_id) REFERENCES public.users(id),
-    								   FOREIGN KEY (order_number) REFERENCES public.orders(number));`)
+                                       FOREIGN KEY (user_id) REFERENCES public.users(id);`)
 	if err != nil {
 		return UserStorage{}, err
 	}
