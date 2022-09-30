@@ -34,12 +34,12 @@ func createToken(id int64, key string) (string, error) {
 	return signedToken, nil
 }
 
-func (a Auth) RegisterNewUser(user User, key string) (string, error) {
-	var modelUser storage.UserModel
+func (ah AsyncHandler) RegisterNewUser(user User, key string) (string, error) {
+	var modelUser storage.User
 	modelUser.Name = user.Name
 	modelUser.Password = EncryptPassword(user.Password, key)
 
-	id, err := a.Storage.AddUser(modelUser)
+	id, err := ah.Storage.AddUser(modelUser)
 	log.Println("user id is", id)
 	if err != nil {
 		log.Println("adding user error", err)
@@ -87,12 +87,12 @@ func (a Auth) AuthMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (a Auth) LogUser(user User, key string) (string, error) {
-	var modelUser storage.UserModel
+func (ah AsyncHandler) LogUser(user User, key string) (string, error) {
+	var modelUser storage.User
 	modelUser.Name = user.Name
 	//modelUser.Password = EncryptPassword(user.Password, key)
 
-	id, err := a.Storage.GetUser(modelUser.Name)
+	id, err := ah.Storage.GetUser(modelUser.Name)
 	if err != nil {
 		log.Println("getting user error", err)
 		return "", err

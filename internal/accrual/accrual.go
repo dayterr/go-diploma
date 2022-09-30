@@ -25,14 +25,14 @@ func (ac AccrualClient) ManagePoints(orderNumber string) {
 		}
 		defer resp.Body.Close()
 
-		var order storage.OrderModel
+		var order storage.Order
 		err = json.Unmarshal(body, &order)
 		if err != nil {
 			log.Println("unmarshalling response error", err)
 		}
 		order.Number = orderNumber
 		log.Println("order is", order.Status)
-		ac.Storage.UpdateOrders(order)
+		ac.Storage.UpdateOrder(order)
 
 		switch order.Status {
 		case "PROCESSED":

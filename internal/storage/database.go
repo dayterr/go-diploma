@@ -70,7 +70,7 @@ func NewDB(dsn string) (UserStorage, error) {
 	}, nil
 }
 
-func (us UserStorage) AddUser(user UserModel) (int64, error) {
+func (us UserStorage) AddUser(user User) (int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -112,22 +112,22 @@ func (us UserStorage) GetUser(username string) (int64, error) {
 	return userID, nil
 }
 
-func (us UserStorage) GetOrder(orderNumber string) (OrderModel, error) {
+func (us UserStorage) GetOrder(orderNumber string) (Order, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var order OrderModel
+	var order Order
 
 	log.Println("getting order from database")
 	res, err := us.DB.QueryContext(ctx, `SELECT id, number, status, accrual, uploaded_at, user_id 
 FROM orders WHERE number = $1`, orderNumber)
 	if err != nil {
 		log.Println("getting order error", err)
-		return OrderModel{}, nil
+		return Order{}, nil
 	}
 	if res.Err() != nil{
 		log.Println("some row error", err)
-		return OrderModel{}, err
+		return Order{}, err
 	}
 	defer res.Close()
 
@@ -135,8 +135,8 @@ FROM orders WHERE number = $1`, orderNumber)
 		err = res.Scan(&order.ID, &order.Number, &order.Status, &order.Accrual,
 			&order.UploadedAt, &order.UserID)
 		if err != nil {
-			log.Println("scanning OrderModel error", err)
-			return OrderModel{}, err
+			log.Println("scanning Order error", err)
+			return Order{}, err
 		}
 	}
 	return order, nil
@@ -172,36 +172,36 @@ func (us UserStorage) AddOrder(orderNumber string, userID int) (int64, error) {
 	return id, nil
 }
 
-func (us UserStorage) GetListOrders(userID int) ([]OrderModel, error) {
+func (us UserStorage) GetListOrders(userID int) ([]Order, error) {
 
 	log.Println("getting user orders from database")
 	res, err := us.DB.Query(`SELECT number, status, accrual, uploaded_at from orders WHERE user_id = $1`, userID)
 	if err != nil {
 		log.Println("getting orders error", err)
-		return []OrderModel{}, err
+		return []Order{}, err
 	}
 	defer res.Close()
 
-	var orders []OrderModel
+	var orders []Order
 	for res.Next() {
-		order := OrderModel{}
+		order := Order{}
 		err = res.Scan(&order.Number, &order.Status, &order.Accrual, &order.UploadedAt)
 		if err != nil {
 			log.Println("scanning order error", err)
-			return []OrderModel{}, err
+			return []Order{}, err
 		}
 		orders = append(orders, order)
 	}
 
 	if res.Err() != nil{
 		log.Println("some row error", err)
-		return []OrderModel{}, err
+		return []Order{}, err
 	}
 
 	return orders, nil
 }
 
-func (us UserStorage) UpdateOrders(order OrderModel) error {
+func (us UserStorage) UpdateOrder(order Order) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -279,24 +279,24 @@ func (us UserStorage) UpdateBalance(balance, withdrawn float64, userID int) erro
 	return nil
 }
 
-func (us UserStorage) GetFullInfoBalance(userID int) (BalanceModel, error) {
+func (us UserStorage) GetFullInfoBalance(userID int) (Balance, error) {
 	res, err := us.DB.Query(`SELECT current, withdrawn FROM balance WHERE user_id = $1`, userID)
 	if err != nil {
 		log.Println("getting balance error", err)
-		return BalanceModel{}, err
+		return Balance{}, err
 	}
 	if res.Err() != nil{
 		log.Println("some row error", err)
-		return BalanceModel{}, err
+		return Balance{}, err
 	}
 	defer res.Close()
-	var balance BalanceModel
+	var balance Balance
 
 	for res.Next() {
 		err = res.Scan(&balance.Current, &balance.Withdrawn)
 		if err != nil {
 			log.Println("scanning balance error", err)
-			return BalanceModel{}, err
+			return Balance{}, err
 		}
 	}
 

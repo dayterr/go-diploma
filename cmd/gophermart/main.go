@@ -4,6 +4,7 @@ import (
 	"github.com/dayterr/go-diploma/cmd/gophermart/handlers"
 	"github.com/dayterr/go-diploma/internal/accrual"
 	config2 "github.com/dayterr/go-diploma/internal/config"
+	"github.com/dayterr/go-diploma/internal/storage"
 	"log"
 	"net/http"
 )
@@ -15,19 +16,17 @@ func main() {
 	}
 
 	orderChannel := make(chan string)
-	ah := handlers.NewAsyncHandler(config.DatabaseURI)
+	ah := handlers.NewAsyncHandler()
+	var s storage.Storager
+	s, err = storage.NewDB(config.DatabaseURI)
+	if err != nil {
+		log.Println("setting database error", err)
+	}
+	ah.Storage = s
 	r := handlers.CreateRouterWithAsyncHandler(ah)
 
 	ac := accrual.NewAccrualClient(config.AccrualSystemAddress, config.DatabaseURI, orderChannel)
 	ah.AccrualClient = ac
-	/*go func() {
-		for {
-			select {
-			case <- ah.AccrualClient.OrderChannel:
-				ah.AccrualClient.ManagePoints(<- ah.AccrualClient.OrderChannel)
-			}
-		}
-	}()*/
 
 	go ah.AccrualClient.ReadOrderNumber()
 

@@ -13,18 +13,13 @@ import (
 type AsyncHandler struct{
 	Auth Auth
 	AccrualClient accrual.AccrualClient
+	Storage storage.Storager
 }
 
 type UserID string
 
-func NewAsyncHandler(dsn string) *AsyncHandler {
+func NewAsyncHandler() *AsyncHandler {
 	var auth Auth
-	var s storage.Storager
-	s, err := storage.NewDB(dsn)
-	if err != nil {
-		log.Println("setting database error", err)
-	}
-	auth.Storage = s
 	auth.Key = ""
 	ah := AsyncHandler{Auth: auth}
 	return &ah
@@ -103,7 +98,7 @@ func (ah *AsyncHandler) PostOrder(w http.ResponseWriter, r *http.Request) {
 
 	orderNumber := string(body)
 
-	order, err := ah.Auth.Storage.GetOrder(orderNumber)
+	order, err := ah.Storage.GetOrder(orderNumber)
 	if err != nil {
 		log.Println("getting order error", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -120,7 +115,7 @@ func (ah *AsyncHandler) PostOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = ah.Auth.Storage.AddOrder(orderNumber, int(userID))
+	_, err = ah.Storage.AddOrder(orderNumber, int(userID))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -137,7 +132,7 @@ func (ah *AsyncHandler) PostOrder(w http.ResponseWriter, r *http.Request) {
 func (ah *AsyncHandler) LoadOrderList(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value(UserIDKey("userid")).(int64)
 
-	orders, err := ah.Auth.Storage.GetListOrders(int(userID))
+	orders, err := ah.Storage.GetListOrders(int(userID))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -162,7 +157,7 @@ func (ah *AsyncHandler) LoadOrderList(w http.ResponseWriter, r *http.Request) {
 func (ah *AsyncHandler) GetBalance(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value(UserIDKey("userid")).(int64)
 
-	balance, err := ah.Auth.Storage.GetFullInfoBalance(int(userID))
+	balance, err := ah.Storage.GetFullInfoBalance(int(userID))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
@@ -195,7 +190,7 @@ func (ah *AsyncHandler) WithdrawPoints(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	balance, err := ah.Auth.Storage.GetBalance(int(userID))
+	balance, err := ah.Storage.GetBalance(int(userID))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -207,13 +202,13 @@ func (ah *AsyncHandler) WithdrawPoints(w http.ResponseWriter, r *http.Request) {
 	}
 
 	diff := balance - withdraw.Sum
-	err = ah.Auth.Storage.UpdateBalance(diff, withdraw.Sum, int(userID))
+	err = ah.Storage.UpdateBalance(diff, withdraw.Sum, int(userID))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	err = ah.Auth.Storage.AddWithdrawal(withdraw.Sum, withdraw.Order, int(userID))
+	err = ah.Storage.AddWithdrawal(withdraw.Sum, withdraw.Order, int(userID))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -225,7 +220,7 @@ func (ah *AsyncHandler) WithdrawPoints(w http.ResponseWriter, r *http.Request) {
 func (ah *AsyncHandler) GetListWithdrawal(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value(UserIDKey("userid")).(int64)
 
-	withdrawals, err := ah.Auth.Storage.GetListWithdrawal(int(userID))
+	withdrawals, err := ah.Storage.GetListWithdrawal(int(userID))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

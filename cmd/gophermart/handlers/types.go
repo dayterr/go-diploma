@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"github.com/dayterr/go-diploma/internal/storage"
 	"github.com/dgrijalva/jwt-go/v4"
 )
 
@@ -14,7 +13,6 @@ type User struct {
 
 type Auth struct {
 	Key string
-	Storage storage.Storager
 }
 
 type CustomClaims struct {
