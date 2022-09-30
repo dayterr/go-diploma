@@ -333,7 +333,7 @@ func (us UserStorage) GetListWithdrawal(userID int) ([]Withdraw, error) {
 	var withdrawals []Withdraw
 	for res.Next() {
 		withdrawal := Withdraw{}
-		err = res.Scan(&withdrawal.Order, &withdrawal.Sum, &withdrawal.ProcessedAt, &withdrawal.UserID)
+		err = res.Scan(&withdrawal.Order, &withdrawal.Sum, &withdrawal.ProcessedAt)
 		if err != nil {
 			log.Println("scanning order error", err)
 			return []Withdraw{}, err
