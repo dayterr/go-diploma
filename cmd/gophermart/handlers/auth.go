@@ -90,7 +90,6 @@ func (a Auth) AuthMiddleware(next http.Handler) http.Handler {
 func (ah AsyncHandler) LogUserWithToken(user User, key string) (string, error) {
 	var modelUser storage.User
 	modelUser.Name = user.Name
-	//modelUser.Password = EncryptPassword(user.Password, key)
 
 	id, err := ah.Storage.GetUser(modelUser.Name)
 	if err != nil {
