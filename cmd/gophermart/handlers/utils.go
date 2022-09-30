@@ -1,16 +1,9 @@
 package handlers
 
 func CheckLuhn(number int) bool {
-	return number % 10 == 0
-}
-
-func CalculateLuhn(number int) int {
-	checkNumber := checksum(number)
-
-	if checkNumber == 0 {
-		return 0
-	}
-	return 10 - checkNumber
+	checkNumber := checksum(number/10)
+	checkNumber += number%10
+	return checkNumber % 10 == 0
 }
 
 func checksum(number int) int {

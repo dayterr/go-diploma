@@ -89,12 +89,14 @@ func (ah *AsyncHandler) PostOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orderNumber := string(body)
+	num = int(body)
 
-	/*if !CheckLuhn(orderNumber) {
+	if !CheckLuhn(bo) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
-	}*/
+	}
+
+	orderNumber := string(body)
 
 	order, err := ah.Auth.Storage.GetOrder(orderNumber)
 	if err != nil {
