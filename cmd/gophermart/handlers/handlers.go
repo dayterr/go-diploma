@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type AsyncHandler struct{
@@ -89,9 +90,13 @@ func (ah *AsyncHandler) PostOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	num = int(body)
+	num, err := strconv.Atoi(string(body))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
-	if !CheckLuhn(bo) {
+	if !CheckLuhn(num) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
